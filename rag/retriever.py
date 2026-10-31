@@ -8,7 +8,12 @@ rag/retriever.py — 零依赖 BM25 检索（中文按字、英文按词）
 """
 import math
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
+
+
+def validate_topk(topk):
+    if type(topk) is not int or not 1 <= topk <= 20:
+        raise ValueError('topk must be an integer from 1 to 20')
 
 
 def tokenize(text):
@@ -24,6 +29,9 @@ class BM25:
         self.k1 = k1
         self.b = b
         self.docs = []        # 每个文档的 token 列表
+        self.frequencies = []
+        self.lengths = []
+        self._dirty = False
         self.doc_ids = []
         self.doc_texts = []
         self.df = defaultdict(int)
@@ -34,6 +42,9 @@ class BM25:
     def add(self, doc_id, text):
         toks = tokenize(text)
         self.docs.append(toks)
+        self.frequencies.append(Counter(toks))
+        self.lengths.append(len(toks))
+        self._dirty = True
         self.doc_ids.append(doc_id)
         self.doc_texts.append(text)
         for t in set(toks):
@@ -41,21 +52,22 @@ class BM25:
         self.N += 1
 
     def build(self):
-        self.avgdl = sum(len(d) for d in self.docs) / max(1, self.N)
+        self.avgdl = sum(self.lengths) / max(1, self.N)
         for t, df in self.df.items():
             self.idf[t] = math.log(1 + (self.N - df + 0.5) / (df + 0.5))
+        self._dirty = False
 
     def search(self, query, topk=5):
+        validate_topk(topk)
+        if self._dirty:
+            self.build()
         q = tokenize(query)
-        if not q:
+        if not q or not self.avgdl:
             return []
         results = []
-        for i, toks in enumerate(self.docs):
-            freq = defaultdict(int)
-            for t in toks:
-                freq[t] += 1
+        for i, freq in enumerate(self.frequencies):
             score = 0.0
-            dl = len(toks)
+            dl = self.lengths[i]
             for term in q:
                 if term in self.idf:
                     f = freq[term]
@@ -65,7 +77,7 @@ class BM25:
                     )
             if score > 0:
                 results.append((score, i))
-        results.sort(reverse=True)
+        results.sort(key=lambda item: (-item[0], item[1]))
         return [
             {"id": self.doc_ids[i], "text": self.doc_texts[i], "score": round(s, 4)}
             for s, i in results[:topk]

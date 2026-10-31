@@ -1,0 +1,13 @@
+[
+  {"id":"zh1","group":"chinese","query":"设备发布温度消息使用主题","relevant":["mqtt.md"]},
+  {"id":"zh2","group":"chinese","query":"固件定时采集串口上报","relevant":["firmware.md"]},
+  {"id":"zh3","group":"chinese","query":"历史均值标准差判断突变","relevant":["anomaly.md"]},
+  {"id":"en1","group":"english","query":"broker publishers subscribers","relevant":["mqtt.md"]},
+  {"id":"en2","group":"english","query":"compost tomato sunlight","relevant":["garden.md"]},
+  {"id":"en3","group":"english","query":"BM25 inverse document frequency","relevant":["retrieval.md"]},
+  {"id":"cross1","group":"cross_topic","query":"MQTT broker and BM25 retrieval","relevant":["mqtt.md","retrieval.md"]},
+  {"id":"cross2","group":"cross_topic","query":"STM32 UART and rolling Z-score","relevant":["firmware.md","anomaly.md"]},
+  {"id":"none1","group":"unanswerable","query":"galaxy supernova neutrino","relevant":[]},
+  {"id":"none2","group":"unanswerable","query":"STM32 warranty price","relevant":[]},
+  {"id":"none3","group":"unanswerable","query":"恐龙化石年代","relevant":[]}
+]
