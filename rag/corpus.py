@@ -1,53 +1,40 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-rag/corpus.py — 语料加载与分块
-
-支持 .md / .txt；按段落切块，长段再做滑动窗口切分，便于精准检索。
-"""
+"""UTF-8 .md/.txt loading with deterministic character windows."""
 import os
 import re
 
-CHUNK_SIZE = 240     # 每块约 240 字
+CHUNK_SIZE = 240
 CHUNK_OVERLAP = 40
 
-_SENT_SPLIT = re.compile(r"(?<=[。！？!?；;])\s*")
 
-
-def _split_sentences(text):
-    return [s.strip() for s in _SENT_SPLIT.split(text) if s.strip()]
-
-
-def _chunk_text(text, source):
-    paras = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+def _chunk_text(text, source, chunk_size=CHUNK_SIZE, overlap=CHUNK_OVERLAP):
+    """Stride=size-overlap; offsets count Python Unicode characters, not bytes."""
+    if type(chunk_size) is not int or chunk_size <= 0:
+        raise ValueError('chunk_size must be a positive integer')
+    if type(overlap) is not int or not 0 <= overlap < chunk_size:
+        raise ValueError('overlap must be an integer in [0, chunk_size)')
+    text = text.strip()
     chunks = []
-    idx = 0
-    buf = ""
-    for para in paras:
-        buf = (buf + "\n" + para).strip()
-        if len(buf) >= CHUNK_SIZE:
-            chunks.append((f"{source}#c{idx}", buf))
-            idx += 1
-            # 滑动窗口：保留重叠部分
-            sentences = _split_sentences(buf)
-            buf = "".join(sentences[-3:]) if sentences else ""
-    if buf.strip():
-        chunks.append((f"{source}#c{idx}", buf))
+    start = 0
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        chunks.append((f'{source}#c{len(chunks)}', text[start:end]))
+        if end == len(text):
+            break
+        start = end - overlap
     return chunks
 
 
 def load_corpus(data_dir):
-    """返回 [(doc_id, text), ...]"""
+    """Flat directory, filename order; stable filename#cN IDs for unchanged files."""
     out = []
     if not os.path.isdir(data_dir):
         return out
     for fn in sorted(os.listdir(data_dir)):
-        if not (fn.endswith(".md") or fn.endswith(".txt")):
-            continue
         path = os.path.join(data_dir, fn)
-        with open(path, "r", encoding="utf-8") as f:
+        if not fn.endswith(('.md', '.txt')) or not os.path.isfile(path):
+            continue
+        with open(path, encoding='utf-8') as f:
             text = f.read()
-        # 去掉 markdown 标题符号噪声（保留内容）
-        text = re.sub(r"^#+\s*", "", text, flags=re.M)
+        text = re.sub(r'^#+[^\S\n]*', '', text, flags=re.M)
         out.extend(_chunk_text(text, fn))
     return out

@@ -16,6 +16,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from app import serve, ask, build_index
 
 if __name__ == "__main__":
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     if len(sys.argv) > 1 and sys.argv[1] == "ask":
         q = " ".join(sys.argv[2:]).strip()
         if not q:

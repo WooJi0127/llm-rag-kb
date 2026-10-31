@@ -31,10 +31,10 @@
 <body>
 <header>
   <h1>📚 本地知识库问答（RAG）</h1>
-  <div class="sub">llm-rag-kb · 自研 BM25 检索 + 抽取式/大模型生成 · 数据不出本机</div>
+  <div class="sub">llm-rag-kb · BM25 检索 + 抽取式/可选模型 · 请核对证据是否支持答案</div>
 </header>
 
-<div id="log"></div>
+<div id="log" role="log" aria-live="polite"></div>
 
 <footer>
   <div class="examples">
@@ -44,7 +44,7 @@
     <button data-q="如何在本地部署大模型？">如何在本地部署大模型？</button>
   </div>
   <div class="row" style="margin-top:10px;">
-    <input id="q" placeholder="输入你的问题，回车发送…" autofocus />
+    <input id="q" aria-label="问题" maxlength="2000" placeholder="输入你的问题，回车发送…" autofocus />
     <button id="send">发送</button>
   </div>
 </footer>
@@ -61,9 +61,11 @@ async function ask(text){
   try{
     const r=await fetch('/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q:text,topk:5})});
     const j=await r.json();
+    if(!r.ok) throw new Error(j.error || 'HTTP '+r.status);
     let html=escapeHtml(j.answer);
     let src=(j.sources||[]).map(s=>`<span>${escapeHtml(s)}</span>`).join('');
-    bot.innerHTML=`<div class="bubble">${html}</div><div class="src">来源：${src||'无'}</div><div class="mode">模式：${j.mode} · 命中 ${j.hits.length} 块</div>`;
+    const evidence=(j.evidence||[]).map(e=>`<details><summary>${escapeHtml(e.id)}</summary><div class="bubble">${escapeHtml(e.text)}</div></details>`).join('');
+    bot.innerHTML=`<div class="bubble">${html}</div><div class="src">来源：${src||'无'}</div><div class="mode">实际模式：${escapeHtml(j.mode)} · 命中 ${j.hits.length} 块${j.fallback_reason?' · 原因：'+escapeHtml(j.fallback_reason):''}</div>${evidence}`;
   }catch(e){ bot.querySelector('.bubble').textContent='请求失败：'+e; }
   log.scrollTop=log.scrollHeight;
 }

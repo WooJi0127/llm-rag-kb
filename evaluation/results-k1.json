@@ -1,0 +1,190 @@
+{
+  "documents": 5,
+  "chunks": 5,
+  "chunk_size": 240,
+  "overlap": 40,
+  "bm25": {
+    "k1": 1.5,
+    "b": 0.75
+  },
+  "overall": {
+    "k": 1,
+    "queries": 11,
+    "answerable_queries": 8,
+    "unanswerable_queries": 3,
+    "recall": 0.875,
+    "mrr": 1.0,
+    "zero_hit_total": 2,
+    "answerable_zero_hits": 0,
+    "unanswerable_zero_hits": 2
+  },
+  "groups": {
+    "chinese": {
+      "k": 1,
+      "queries": 3,
+      "answerable_queries": 3,
+      "unanswerable_queries": 0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "zero_hit_total": 0,
+      "answerable_zero_hits": 0,
+      "unanswerable_zero_hits": 0
+    },
+    "cross_topic": {
+      "k": 1,
+      "queries": 2,
+      "answerable_queries": 2,
+      "unanswerable_queries": 0,
+      "recall": 0.5,
+      "mrr": 1.0,
+      "zero_hit_total": 0,
+      "answerable_zero_hits": 0,
+      "unanswerable_zero_hits": 0
+    },
+    "english": {
+      "k": 1,
+      "queries": 3,
+      "answerable_queries": 3,
+      "unanswerable_queries": 0,
+      "recall": 1.0,
+      "mrr": 1.0,
+      "zero_hit_total": 0,
+      "answerable_zero_hits": 0,
+      "unanswerable_zero_hits": 0
+    },
+    "unanswerable": {
+      "k": 1,
+      "queries": 3,
+      "answerable_queries": 0,
+      "unanswerable_queries": 3,
+      "recall": 0,
+      "mrr": 0,
+      "zero_hit_total": 2,
+      "answerable_zero_hits": 0,
+      "unanswerable_zero_hits": 2
+    }
+  },
+  "rows": [
+    {
+      "id": "zh1",
+      "group": "chinese",
+      "query": "设备发布温度消息使用主题",
+      "relevant": [
+        "mqtt.md"
+      ],
+      "ranked": [
+        "mqtt.md#c0",
+        "anomaly.md#c0"
+      ]
+    },
+    {
+      "id": "zh2",
+      "group": "chinese",
+      "query": "固件定时采集串口上报",
+      "relevant": [
+        "firmware.md"
+      ],
+      "ranked": [
+        "firmware.md#c0"
+      ]
+    },
+    {
+      "id": "zh3",
+      "group": "chinese",
+      "query": "历史均值标准差判断突变",
+      "relevant": [
+        "anomaly.md"
+      ],
+      "ranked": [
+        "anomaly.md#c0"
+      ]
+    },
+    {
+      "id": "en1",
+      "group": "english",
+      "query": "broker publishers subscribers",
+      "relevant": [
+        "mqtt.md"
+      ],
+      "ranked": [
+        "mqtt.md#c0"
+      ]
+    },
+    {
+      "id": "en2",
+      "group": "english",
+      "query": "compost tomato sunlight",
+      "relevant": [
+        "garden.md"
+      ],
+      "ranked": [
+        "garden.md#c0"
+      ]
+    },
+    {
+      "id": "en3",
+      "group": "english",
+      "query": "BM25 inverse document frequency",
+      "relevant": [
+        "retrieval.md"
+      ],
+      "ranked": [
+        "retrieval.md#c0"
+      ]
+    },
+    {
+      "id": "cross1",
+      "group": "cross_topic",
+      "query": "MQTT broker and BM25 retrieval",
+      "relevant": [
+        "mqtt.md",
+        "retrieval.md"
+      ],
+      "ranked": [
+        "retrieval.md#c0",
+        "mqtt.md#c0",
+        "firmware.md#c0",
+        "garden.md#c0",
+        "anomaly.md#c0"
+      ]
+    },
+    {
+      "id": "cross2",
+      "group": "cross_topic",
+      "query": "STM32 UART and rolling Z-score",
+      "relevant": [
+        "firmware.md",
+        "anomaly.md"
+      ],
+      "ranked": [
+        "anomaly.md#c0",
+        "firmware.md#c0",
+        "retrieval.md#c0",
+        "garden.md#c0"
+      ]
+    },
+    {
+      "id": "none1",
+      "group": "unanswerable",
+      "query": "galaxy supernova neutrino",
+      "relevant": [],
+      "ranked": []
+    },
+    {
+      "id": "none2",
+      "group": "unanswerable",
+      "query": "STM32 warranty price",
+      "relevant": [],
+      "ranked": [
+        "firmware.md#c0"
+      ]
+    },
+    {
+      "id": "none3",
+      "group": "unanswerable",
+      "query": "恐龙化石年代",
+      "relevant": [],
+      "ranked": []
+    }
+  ]
+}
